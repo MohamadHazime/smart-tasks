@@ -152,6 +152,32 @@ public sealed class TaskServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task ToggleSubTaskAsync_FlipsSubTaskIsDone()
+    {
+        var created = await CreateTaskAsync("Parent", Priority.Medium);
+        var subTask = await AddSubTaskAsync(created.Id, "Child");
+
+        var toggled = await ToggleSubTaskAsync(created.Id, subTask!.Id);
+
+        Assert.NotNull(toggled);
+        Assert.True(toggled.IsDone);
+
+        await using var context = _database.CreateContext();
+        Assert.True((await context.SubTasks.SingleAsync()).IsDone);
+    }
+
+    [Fact]
+    public async Task ToggleSubTaskAsync_WhenSubTaskBelongsToAnotherTask_ReturnsNull()
+    {
+        var owner = await CreateTaskAsync("Owner", Priority.Medium);
+        var other = await CreateTaskAsync("Other", Priority.Medium);
+        var subTask = await AddSubTaskAsync(owner.Id, "Child");
+
+        Assert.Null(await ToggleSubTaskAsync(other.Id, subTask!.Id));
+        Assert.Null(await ToggleSubTaskAsync(MissingId, subTask.Id));
+    }
+
+    [Fact]
     public async Task DeleteAsync_RemovesTaskAndCascadesToSubTasks()
     {
         var created = await CreateTaskAsync("Doomed", Priority.Medium);
@@ -224,6 +250,12 @@ public sealed class TaskServiceTests : IDisposable
         await using var context = _database.CreateContext();
         return await new TaskService(context).AddSubTaskAsync(
             taskId, new CreateSubTaskRequest { Title = title }, _ct);
+    }
+
+    private async Task<SubTaskResponse?> ToggleSubTaskAsync(int taskId, int subTaskId)
+    {
+        await using var context = _database.CreateContext();
+        return await new TaskService(context).ToggleSubTaskAsync(taskId, subTaskId, _ct);
     }
 
     private async Task<IReadOnlyList<TaskResponse>> GetAllAsync(TaskStatusFilter? status, Priority? priority)

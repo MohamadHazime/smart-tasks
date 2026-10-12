@@ -48,6 +48,10 @@ Content-Type: application/json
 
 ###
 
+PATCH {{host}}/api/tasks/1/subtasks/1/toggle
+
+###
+
 POST {{host}}/api/tasks/1/suggest-subtasks
 
 ###

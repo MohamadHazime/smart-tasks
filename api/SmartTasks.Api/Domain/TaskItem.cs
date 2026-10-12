@@ -40,4 +40,11 @@ public class TaskItem : Entity
         _subTasks.Add(subTask);
         return subTask;
     }
+
+    public SubTask? ToggleSubTask(int subTaskId)
+    {
+        var subTask = _subTasks.FirstOrDefault(s => s.Id == subTaskId);
+        subTask?.Toggle();
+        return subTask;
+    }
 }

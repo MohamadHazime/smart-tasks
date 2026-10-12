@@ -96,6 +96,19 @@ public sealed class TaskService(IAppDbContext db) : ITaskService
         return subTask.ToResponse();
     }
 
+    public async Task<SubTaskResponse?> ToggleSubTaskAsync(
+        int taskId, int subTaskId, CancellationToken cancellationToken)
+    {
+        var task = await FindWithSubTasksAsync(taskId, cancellationToken);
+        var subTask = task?.ToggleSubTask(subTaskId);
+        if (subTask is null)
+            return null;
+
+        await db.SaveChangesAsync(cancellationToken);
+
+        return subTask.ToResponse();
+    }
+
     private Task<TaskItem?> FindWithSubTasksAsync(int id, CancellationToken cancellationToken) =>
         db.Tasks
             .Include(t => t.SubTasks)

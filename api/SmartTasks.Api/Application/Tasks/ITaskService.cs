@@ -11,4 +11,5 @@ public interface ITaskService
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
     Task<TaskResponse?> ToggleAsync(int id, CancellationToken cancellationToken);
     Task<SubTaskResponse?> AddSubTaskAsync(int taskId, CreateSubTaskRequest request, CancellationToken cancellationToken);
+    Task<SubTaskResponse?> ToggleSubTaskAsync(int taskId, int subTaskId, CancellationToken cancellationToken);
 }
