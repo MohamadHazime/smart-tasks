@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTasks.Api", "SmartTasks.Api\SmartTasks.Api.csproj", "{D1E509D1-6E13-4A23-A695-4455A4255648}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartTasks.Api.Tests", "SmartTasks.Api.Tests\SmartTasks.Api.Tests.csproj", "{C3B02D3F-2BC9-4FFC-A7CB-2699AC85BDEF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1E509D1-6E13-4A23-A695-4455A4255648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1E509D1-6E13-4A23-A695-4455A4255648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1E509D1-6E13-4A23-A695-4455A4255648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1E509D1-6E13-4A23-A695-4455A4255648}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3B02D3F-2BC9-4FFC-A7CB-2699AC85BDEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3B02D3F-2BC9-4FFC-A7CB-2699AC85BDEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3B02D3F-2BC9-4FFC-A7CB-2699AC85BDEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3B02D3F-2BC9-4FFC-A7CB-2699AC85BDEF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
