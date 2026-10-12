@@ -10,7 +10,7 @@ public sealed class OpenRouterService(
     IOptions<OpenRouterOptions> options,
     ILogger<OpenRouterService> logger) : IAiService
 {
-    private const string SystemPrompt =
+    private static readonly string SystemPrompt =
         "You break a task down into small, actionable subtasks. " +
         $"Respond with ONLY a JSON array of {SubTaskSuggestionParser.MinSuggestions} to {SubTaskSuggestionParser.MaxSuggestions} " +
         "short subtask titles as strings, each under 100 characters. " +
