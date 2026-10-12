@@ -1,0 +1,13 @@
+<main class="shell">
+  <h1>Smart Tasks</h1>
+
+  @if (error(); as message) {
+    <p class="error">{{ message }}</p>
+  } @else if (taskCount() === null) {
+    <p>Loading tasks…</p>
+  } @else {
+    <p>API connected through the proxy: {{ taskCount() }} task(s) found.</p>
+  }
+
+  <router-outlet />
+</main>
