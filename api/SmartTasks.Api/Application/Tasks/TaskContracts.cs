@@ -55,3 +55,5 @@ public sealed record TaskResponse(
     IReadOnlyList<SubTaskResponse> SubTasks);
 
 public sealed record SubTaskResponse(int Id, string Title, bool IsDone);
+
+public sealed record SubTaskSuggestionsResponse(int TaskId, IReadOnlyList<string> Suggestions);

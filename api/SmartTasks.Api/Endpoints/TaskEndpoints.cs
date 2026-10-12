@@ -35,6 +35,9 @@ public static class TaskEndpoints
             .AddEndpointFilter<ValidationFilter<CreateSubTaskRequest>>()
             .ProducesValidationProblem();
 
+        group.MapPost("/{id:int}/suggest-subtasks", SuggestSubTasks)
+            .ProducesProblem(StatusCodes.Status502BadGateway);
+
         return app;
     }
 
@@ -77,5 +80,11 @@ public static class TaskEndpoints
         int id, CreateSubTaskRequest request, ITaskService service, CancellationToken cancellationToken) =>
         await service.AddSubTaskAsync(id, request, cancellationToken) is { } subTask
             ? TypedResults.CreatedAtRoute(subTask, GetTaskByIdRoute, new { id })
+            : TypedResults.NotFound();
+
+    private static async Task<Results<Ok<SubTaskSuggestionsResponse>, NotFound>> SuggestSubTasks(
+        int id, ISubTaskSuggestionService service, CancellationToken cancellationToken) =>
+        await service.SuggestAsync(id, cancellationToken) is { } suggestions
+            ? TypedResults.Ok(suggestions)
             : TypedResults.NotFound();
 }
