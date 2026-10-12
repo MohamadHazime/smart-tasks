@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using SmartTasks.Api.Application;
 using SmartTasks.Api.Domain;
+using SmartTasks.Api.Infrastructure.Converters;
 
 namespace SmartTasks.Api.Infrastructure;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
     public DbSet<SubTask> SubTasks => Set<SubTask>();
@@ -11,6 +13,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Properties<DateTime>().HaveConversion<UtcDateTimeConverter>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<UtcDateTimeConverter>();
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)

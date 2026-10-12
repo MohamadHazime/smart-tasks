@@ -1,3 +1,62 @@
-@SmartTasks.Api_HostAddress = http://localhost:61241
+@host = http://localhost:5062
+
+GET {{host}}/api/tasks
+Accept: application/json
+
+###
+
+GET {{host}}/api/tasks?status=Open&priority=High
+
+###
+
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": "Prepare for the assessment",
+  "description": "Rehearse the CRUD slice",
+  "priority": 2,
+  "dueDate": "2026-10-13T09:00:00Z"
+}
+
+###
+
+GET {{host}}/api/tasks/1
+
+###
+
+PUT {{host}}/api/tasks/1
+Content-Type: application/json
+
+{
+  "title": "Prepare for the assessment (updated)",
+  "priority": 1
+}
+
+###
+
+PATCH {{host}}/api/tasks/1/toggle
+
+###
+
+POST {{host}}/api/tasks/1/subtasks
+Content-Type: application/json
+
+{
+  "title": "Review the request flow"
+}
+
+###
+
+POST {{host}}/api/tasks
+Content-Type: application/json
+
+{
+  "title": ""
+}
+
+###
+
+DELETE {{host}}/api/tasks/1
 
 ###
