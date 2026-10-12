@@ -1,13 +1,17 @@
-<main class="shell">
-  <h1>Smart Tasks</h1>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" routerLink="/">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </span>
+      Smart Tasks
+    </a>
+    <span class="tagline">AI-assisted planning</span>
+  </div>
+</header>
 
-  @if (error(); as message) {
-    <p class="error">{{ message }}</p>
-  } @else if (taskCount() === null) {
-    <p>Loading tasks…</p>
-  } @else {
-    <p>API connected through the proxy: {{ taskCount() }} task(s) found.</p>
-  }
-
+<main class="content">
   <router-outlet />
 </main>

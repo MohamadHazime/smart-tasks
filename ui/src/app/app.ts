@@ -1,27 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterOutlet } from '@angular/router';
-import { TaskService } from './core/task.service';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RouterLink],
   selector: 'app-root',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './app.scss',
   templateUrl: './app.html',
 })
-export class App {
-  private readonly taskService = inject(TaskService);
-
-  protected readonly taskCount = signal<number | null>(null);
-  protected readonly error = signal<string | null>(null);
-
-  constructor() {
-    this.taskService
-      .getAll()
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (tasks) => this.taskCount.set(tasks.length),
-        error: () => this.error.set('Could not reach the API. Is it running on port 5062?'),
-      });
-  }
-}
+export class App {}

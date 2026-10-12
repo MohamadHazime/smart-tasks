@@ -1,0 +1,163 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.back-link {
+  align-self: flex-start;
+  margin-bottom: 0;
+}
+
+.overview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px;
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+
+    &.is-done {
+      color: var(--text-subtle);
+      text-decoration: line-through;
+    }
+  }
+}
+
+.overview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  gap: 12px;
+}
+
+.overview-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.created {
+  color: var(--text-subtle);
+  font-size: 13px;
+}
+
+.description {
+  margin: 0;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.subtasks,
+.ai {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  h2 {
+    font-size: 17px;
+    font-weight: 650;
+  }
+
+  p {
+    margin: 2px 0 0;
+  }
+}
+
+.count,
+.muted {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.subtask-list,
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subtask,
+.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: var(--surface-muted);
+  }
+}
+
+.subtask.is-done span {
+  color: var(--text-subtle);
+  text-decoration: line-through;
+}
+
+.add-subtask {
+  display: flex;
+  gap: 8px;
+}
+
+.ai {
+  position: relative;
+  border-color: transparent;
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    var(--ai-gradient) border-box;
+  border: 1px solid transparent;
+}
+
+.suggestion {
+  border: 1px solid var(--border);
+
+  &.selected {
+    border-color: var(--primary);
+    background: var(--primary-soft);
+  }
+}
+
+.suggestion-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .skeleton {
+    height: 40px;
+  }
+}
+
+.ai-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}

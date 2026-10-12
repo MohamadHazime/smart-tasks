@@ -1,0 +1,204 @@
+<a class="back-link" routerLink="/">
+  <app-icon name="arrow-left" />
+  All tasks
+</a>
+
+@if (loadError(); as message) {
+  <div class="alert" role="alert">
+    <app-icon name="alert" />
+    <span>{{ message }}</span>
+  </div>
+} @else if (task(); as task) {
+  <article class="card overview">
+    <div class="overview-top">
+      <span class="pill" [class.done]="task.isDone">{{ task.isDone ? 'Completed' : 'In progress' }}</span>
+      <div class="overview-actions">
+        <a class="btn btn-ghost btn-sm" [routerLink]="['/tasks', task.id, 'edit']">
+          <app-icon name="edit" [size]="14" />
+          Edit
+        </a>
+        <button type="button" class="btn btn-danger btn-sm" [disabled]="busy()" (click)="deleteTask()">
+          <app-icon name="trash" [size]="14" />
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <h1 [class.is-done]="task.isDone">{{ task.title }}</h1>
+
+    <div class="meta">
+      <app-priority-badge [priority]="task.priority" />
+      @if (task.dueDate) {
+        <span class="pill" [class.overdue]="overdue()">
+          <app-icon name="calendar" [size]="13" />
+          {{ overdue() ? 'Overdue · ' : 'Due ' }}{{ task.dueDate | date: 'EEE, MMM d, y' : 'UTC' }}
+        </span>
+      }
+      <span class="created">Created {{ task.createdAt | date: 'MMM d, y, h:mm a' }}</span>
+    </div>
+
+    @if (task.description) {
+      <p class="description">{{ task.description }}</p>
+    }
+
+    <button
+      type="button"
+      class="btn"
+      [class.btn-primary]="!task.isDone"
+      [class.btn-secondary]="task.isDone"
+      [disabled]="busy()"
+      (click)="toggleTask()"
+    >
+      <app-icon [name]="task.isDone ? 'x' : 'check'" />
+      {{ task.isDone ? 'Reopen task' : 'Mark as done' }}
+    </button>
+  </article>
+
+  @if (actionError(); as message) {
+    <div class="alert" role="alert">
+      <app-icon name="alert" />
+      <span>{{ message }}</span>
+    </div>
+  }
+
+  <section class="card subtasks" aria-labelledby="subtasks-heading">
+    <header class="section-header">
+      <h2 id="subtasks-heading">Subtasks</h2>
+      @if (progress(); as p) {
+        @if (p.total > 0) {
+          <span class="count">{{ p.done }} of {{ p.total }} done</span>
+        }
+      }
+    </header>
+
+    @if (progress(); as p) {
+      @if (p.total > 0) {
+        <div class="progress" aria-hidden="true">
+          <span [style.width.%]="p.percent"></span>
+        </div>
+      }
+    }
+
+    @if (task.subTasks.length > 0) {
+      <ul class="subtask-list">
+        @for (subTask of task.subTasks; track subTask.id) {
+          <li>
+            <label class="subtask" [class.is-done]="subTask.isDone">
+              <input
+                type="checkbox"
+                class="check"
+                [checked]="subTask.isDone"
+                [disabled]="busySubTaskIds().has(subTask.id)"
+                (change)="toggleSubTask(subTask)"
+              />
+              <span>{{ subTask.title }}</span>
+            </label>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="muted">No subtasks yet. Add one below or let AI suggest some.</p>
+    }
+
+    <form class="add-subtask" (submit)="addSubTask($event)">
+      <label for="new-subtask" class="visually-hidden">New subtask</label>
+      <input
+        id="new-subtask"
+        class="input"
+        placeholder="Add a subtask…"
+        autocomplete="off"
+        [formControl]="newSubTask"
+      />
+      <button type="submit" class="btn btn-secondary" [disabled]="addingSubTask() || newSubTask.invalid">
+        @if (addingSubTask()) {
+          <span class="spinner"></span>
+        } @else {
+          <app-icon name="plus" />
+        }
+        Add
+      </button>
+    </form>
+  </section>
+
+  <section class="card ai" aria-labelledby="ai-heading">
+    <header class="section-header">
+      <div>
+        <h2 id="ai-heading">AI assistant</h2>
+        <p class="muted">Get suggested subtasks based on the title and description.</p>
+      </div>
+      @if (!suggestions()) {
+        <button type="button" class="btn btn-ai" [disabled]="suggesting()" (click)="suggest()">
+          @if (suggesting()) {
+            <span class="spinner"></span>
+            Thinking…
+          } @else {
+            ✨ Suggest subtasks
+          }
+        </button>
+      }
+    </header>
+
+    @if (suggesting()) {
+      <div class="suggestion-skeleton" aria-busy="true" aria-label="Generating suggestions">
+        @for (row of [1, 2, 3]; track row) {
+          <span class="skeleton"></span>
+        }
+      </div>
+    }
+
+    @if (aiError(); as message) {
+      <div class="alert" role="alert">
+        <app-icon name="alert" />
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    @if (suggestions(); as list) {
+      <ul class="suggestion-list">
+        @for (suggestion of list; track $index) {
+          <li>
+            <label class="suggestion" [class.selected]="suggestion.selected">
+              <input
+                type="checkbox"
+                class="check square"
+                [checked]="suggestion.selected"
+                (change)="toggleSuggestion($index)"
+              />
+              <span>{{ suggestion.title }}</span>
+            </label>
+          </li>
+        }
+      </ul>
+
+      <footer class="ai-actions">
+        <button type="button" class="btn btn-ghost" [disabled]="savingSuggestions()" (click)="dismissSuggestions()">
+          Dismiss
+        </button>
+        <button type="button" class="btn btn-ghost" [disabled]="savingSuggestions()" (click)="suggest()">
+          <app-icon name="sparkles" />
+          Regenerate
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="selectedCount() === 0 || savingSuggestions()"
+          (click)="saveSuggestions()"
+        >
+          @if (savingSuggestions()) {
+            <span class="spinner"></span>
+            Adding…
+          } @else {
+            <app-icon name="plus" />
+            Add {{ selectedCount() }} {{ selectedCount() === 1 ? 'subtask' : 'subtasks' }}
+          }
+        </button>
+      </footer>
+    }
+  </section>
+} @else {
+  <div class="card overview" aria-busy="true" aria-label="Loading task">
+    <span class="skeleton" style="width: 90px; height: 22px"></span>
+    <span class="skeleton" style="width: 60%; height: 28px"></span>
+    <span class="skeleton" style="width: 40%; height: 16px"></span>
+  </div>
+}

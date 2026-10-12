@@ -50,6 +50,10 @@ export class TaskService {
     return this.http.post<SubTask>(`${this.baseUrl}/${taskId}/subtasks`, request);
   }
 
+  toggleSubTask(taskId: number, subTaskId: number): Observable<SubTask> {
+    return this.http.patch<SubTask>(`${this.baseUrl}/${taskId}/subtasks/${subTaskId}/toggle`, null);
+  }
+
   suggestSubTasks(taskId: number): Observable<SubTaskSuggestions> {
     return this.http.post<SubTaskSuggestions>(`${this.baseUrl}/${taskId}/suggest-subtasks`, null);
   }

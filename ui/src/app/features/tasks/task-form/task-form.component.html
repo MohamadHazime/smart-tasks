@@ -1,0 +1,96 @@
+<a class="back-link" [routerLink]="cancelLink()">
+  <app-icon name="arrow-left" />
+  {{ isEdit() ? 'Back to task' : 'All tasks' }}
+</a>
+
+<header class="page-header">
+  <div>
+    <h1>{{ isEdit() ? 'Edit task' : 'New task' }}</h1>
+    <p>{{ isEdit() ? 'Update the details below.' : 'Describe what needs doing. You can add subtasks next.' }}</p>
+  </div>
+</header>
+
+@if (error(); as message) {
+  <div class="alert" role="alert">
+    <app-icon name="alert" />
+    <span>{{ message }}</span>
+  </div>
+}
+
+<form class="card form" [formGroup]="form" [attr.aria-busy]="loading()" (ngSubmit)="submit()" novalidate>
+  @let titleError = fieldError('title');
+  <div class="field">
+    <label class="label" for="title">Title</label>
+    <input
+      id="title"
+      class="input"
+      formControlName="title"
+      placeholder="e.g. Prepare the quarterly report"
+      autocomplete="off"
+      [class.invalid]="!!titleError"
+      [attr.aria-invalid]="!!titleError"
+      [attr.aria-describedby]="titleError ? 'title-error' : null"
+    />
+    <div class="hint">
+      @if (titleError) {
+        <span id="title-error" class="error-text">{{ titleError }}</span>
+      } @else {
+        <span></span>
+      }
+      <span>{{ form.controls.title.value.length }}/{{ titleMax }}</span>
+    </div>
+  </div>
+
+  @let descriptionError = fieldError('description');
+  <div class="field">
+    <label class="label" for="description">Description <span class="optional">optional</span></label>
+    <textarea
+      id="description"
+      class="textarea"
+      formControlName="description"
+      placeholder="Add context, links or acceptance criteria…"
+      [class.invalid]="!!descriptionError"
+      [attr.aria-invalid]="!!descriptionError"
+    ></textarea>
+    <div class="hint">
+      @if (descriptionError) {
+        <span class="error-text">{{ descriptionError }}</span>
+      } @else {
+        <span>Helps the AI suggest better subtasks.</span>
+      }
+      <span>{{ form.controls.description.value.length }}/{{ descriptionMax }}</span>
+    </div>
+  </div>
+
+  <div class="row">
+    <fieldset class="field">
+      <legend class="label">Priority</legend>
+      <div class="priority-picker">
+        @for (option of priorities; track option.value) {
+          <label [class]="'priority-option p-' + option.label.toLowerCase()">
+            <input type="radio" formControlName="priority" [value]="option.value" />
+            <span>{{ option.label }}</span>
+          </label>
+        }
+      </div>
+    </fieldset>
+
+    <div class="field">
+      <label class="label" for="dueDate">Due date <span class="optional">optional</span></label>
+      <input id="dueDate" type="date" class="input" formControlName="dueDate" />
+    </div>
+  </div>
+
+  <footer class="actions">
+    <a class="btn btn-ghost" [routerLink]="cancelLink()">Cancel</a>
+    <button type="submit" class="btn btn-primary" [disabled]="saving() || loading()">
+      @if (saving()) {
+        <span class="spinner"></span>
+        Saving…
+      } @else {
+        <app-icon name="check" />
+        {{ isEdit() ? 'Save changes' : 'Create task' }}
+      }
+    </button>
+  </footer>
+</form>

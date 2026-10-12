@@ -1,0 +1,131 @@
+<header class="page-header">
+  <div>
+    <h1>My tasks</h1>
+    @if (tasks(); as list) {
+      <p>{{ list.length }} {{ list.length === 1 ? 'task' : 'tasks' }} · {{ openCount() }} open</p>
+    } @else {
+      <p>Plan, prioritize and break work down with AI.</p>
+    }
+  </div>
+  <a class="btn btn-primary" routerLink="/tasks/new">
+    <app-icon name="plus" />
+    New task
+  </a>
+</header>
+
+<section class="toolbar" aria-label="Filters">
+  <div class="segmented" role="group" aria-label="Status">
+    @for (option of statusOptions; track option.label) {
+      <button
+        type="button"
+        [class.active]="status() === option.value"
+        [attr.aria-pressed]="status() === option.value"
+        (click)="status.set(option.value)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+
+  <label class="priority-filter">
+    <span class="visually-hidden">Priority</span>
+    <select #prioritySelect class="select" (change)="onPriorityChange(prioritySelect.value)">
+      <option value="" [selected]="priority() === null">All priorities</option>
+      @for (option of priorityOptions; track option.value) {
+        <option [value]="option.value" [selected]="priority() === option.value">{{ option.label }}</option>
+      }
+    </select>
+  </label>
+</section>
+
+@if (error(); as message) {
+  <div class="alert" role="alert">
+    <app-icon name="alert" />
+    <span>{{ message }}</span>
+  </div>
+}
+
+@if (tasks(); as list) {
+  @if (list.length === 0) {
+    <div class="empty card">
+      <div class="empty-icon"><app-icon name="check" [size]="26" /></div>
+      @if (hasFilters()) {
+        <h2>No tasks match these filters</h2>
+        <p>Try a different status or priority.</p>
+        <button type="button" class="btn btn-secondary" (click)="clearFilters()">Clear filters</button>
+      } @else {
+        <h2>No tasks yet</h2>
+        <p>Create your first task and let AI suggest the steps.</p>
+        <a class="btn btn-primary" routerLink="/tasks/new">
+          <app-icon name="plus" />
+          Create a task
+        </a>
+      }
+    </div>
+  } @else {
+    <ul class="task-list card">
+      @for (task of list; track task.id) {
+        <li class="task" [class.is-done]="task.isDone">
+          <input
+            type="checkbox"
+            class="check"
+            [checked]="task.isDone"
+            [disabled]="busyIds().has(task.id)"
+            [attr.aria-label]="(task.isDone ? 'Reopen ' : 'Complete ') + task.title"
+            (change)="toggle(task)"
+          />
+
+          <a class="task-body" [routerLink]="['/tasks', task.id]">
+            <span class="task-title">{{ task.title }}</span>
+            @if (task.description) {
+              <span class="task-description">{{ task.description }}</span>
+            }
+            <span class="task-meta">
+              <app-priority-badge [priority]="task.priority" />
+              @if (task.dueDate) {
+                <span class="pill" [class.overdue]="isOverdue(task)">
+                  <app-icon name="calendar" [size]="13" />
+                  {{ isOverdue(task) ? 'Overdue · ' : '' }}{{ task.dueDate | date: 'MMM d' : 'UTC' }}
+                </span>
+              }
+              @if (task.subTasks.length > 0) {
+                @let p = progress(task);
+                <span class="pill" [class.done]="p.done === p.total">
+                  <app-icon name="list" [size]="13" />
+                  {{ p.done }}/{{ p.total }}
+                </span>
+              }
+            </span>
+          </a>
+
+          <div class="task-actions">
+            <a class="btn btn-ghost btn-icon" [routerLink]="['/tasks', task.id, 'edit']" [attr.aria-label]="'Edit ' + task.title">
+              <app-icon name="edit" />
+            </a>
+            <button
+              type="button"
+              class="btn btn-danger btn-icon"
+              [disabled]="busyIds().has(task.id)"
+              [attr.aria-label]="'Delete ' + task.title"
+              (click)="delete(task)"
+            >
+              <app-icon name="trash" />
+            </button>
+          </div>
+        </li>
+      }
+    </ul>
+  }
+} @else if (!error()) {
+  <ul class="task-list card" aria-busy="true" aria-label="Loading tasks">
+    @for (row of [1, 2, 3]; track row) {
+      <li class="task">
+        <span class="skeleton skeleton-check"></span>
+        <span class="task-body">
+          <span class="skeleton skeleton-title"></span>
+          <span class="skeleton skeleton-meta"></span>
+        </span>
+      </li>
+    }
+  </ul>
+}
